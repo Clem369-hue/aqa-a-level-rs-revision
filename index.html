@@ -22,8 +22,16 @@ label,input,select,textarea,.grid>*,.planner>*,.brand{min-width:0}.row>label{max
 body.smart-mobile{font-size:17px}body.smart-mobile .shell,body.smart-mobile .wrap{max-width:760px;padding:.75rem}body.smart-mobile button{min-height:50px}body.smart-mobile .grid,body.smart-mobile .planner,body.smart-mobile .filters,body.smart-mobile .controls{grid-template-columns:1fr!important}body.smart-mobile .components,body.smart-mobile .tools,body.smart-mobile .paper-tabs{overflow-x:auto;flex-wrap:nowrap!important;display:flex!important;position:sticky;top:0;z-index:5;background:var(--bg);padding:.6rem 0}body.smart-mobile .components button,body.smart-mobile .tools button,body.smart-mobile .paper-tabs button{white-space:nowrap;flex:0 0 auto}body.smart-mobile .face{min-height:300px}
 
 
+
+/* Revision+ */
+.revision-plus-launch{position:fixed;right:1rem;bottom:4.6rem;z-index:49;background:var(--raised);border:1px solid var(--accent);color:var(--accent);box-shadow:0 8px 26px #0007}
+.plus-dialog{width:min(1040px,97vw);max-height:94vh;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:16px;padding:1.1rem}
+.plus-dialog::backdrop{background:#000c}.plus-head,.plus-spread{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}.plus-tabs{display:flex;gap:.4rem;overflow:auto;padding:.7rem 0 1rem;border-bottom:1px solid var(--line);margin-bottom:1rem}.plus-tabs button{white-space:nowrap}.plus-tabs button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}.plus-box{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:1rem;margin-bottom:1rem}.plus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.plus-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}.plus-input{margin:.5rem 0}.plus-primary{background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important}.heatmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.65rem}.heat{border:1px solid var(--line);border-radius:12px;padding:.8rem;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}.heat[data-band="0"]{background:#45272d}.heat[data-band="1"]{background:#4b3827}.heat[data-band="2"]{background:#45452a}.heat[data-band="3"]{background:#243d34}.heat[data-band="4"]{background:#1d4639}.heat strong{display:block}.heat span{font-size:.8rem;color:var(--muted)}.search-results{display:grid;gap:.65rem;margin-top:1rem}.search-item,.bookmark-item,.mock-q,.master-card,.battle-card{border:1px solid var(--line);border-radius:12px;padding:1rem;background:var(--surface)}.search-item p,.bookmark-item p{margin:.35rem 0}.plus-pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem;color:var(--muted);font-size:.8rem}.bookmark-item{display:flex;justify-content:space-between;gap:1rem}.mock-q textarea{min-height:190px;margin:.7rem 0}.mark-result{border-left:3px solid var(--accent);padding:1rem;background:var(--surface);margin-top:.7rem}.mark-big{font-size:1.8rem;color:var(--accent);font-weight:800}.mark-breakdown{display:flex;gap:.7rem;flex-wrap:wrap}.mark-breakdown span{border:1px solid var(--line);border-radius:999px;padding:.2rem .65rem}.master-meter{display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem;margin:.8rem 0}.master-meter span{height:8px;border-radius:99px;background:#4a4d57}.master-meter span.on{background:var(--accent)}.battle-columns{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.battle-card ul{margin-bottom:0}.plus-note{border-left:3px solid var(--accent);padding:.8rem 1rem;background:var(--surface);margin:.8rem 0}.plus-actions{display:flex;gap:.5rem;flex-wrap:wrap}.idk-btn{border-color:var(--bad)!important;color:var(--bad)!important}
+@media(max-width:760px){.revision-plus-launch{right:.75rem;bottom:4.8rem}.plus-dialog{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;border-radius:0;padding:.85rem}.plus-grid,.plus-three,.battle-columns{grid-template-columns:1fr}.plus-tabs{position:sticky;top:0;background:var(--surface);z-index:4}.bookmark-item{display:block}.bookmark-item button{margin-top:.5rem}.heatmap{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.heatmap{grid-template-columns:1fr}.plus-tabs button{min-height:48px}}
+
 </style>
-</head>
+<link rel="manifest" href="./manifest.webmanifest">\n</head>
 <body>
 <a class="skip" href="#workspace">Skip to revision tools</a>
 <div class="wrap">
@@ -650,6 +658,162 @@ document.addEventListener("click",function(e){
   }
  }catch(err){}
 },true);
+})();
+</script>
+
+<button id="revision-plus-launch" class="revision-plus-launch no-print" type="button">Revision+</button>
+<dialog id="revision-plus-dialog" class="plus-dialog no-print" aria-labelledby="plus-title">
+ <div class="plus-head"><div><p class="eyebrow">Advanced revision tools</p><h2 id="plus-title">Revision+</h2></div><button id="plus-close" type="button">Close</button></div>
+ <nav class="plus-tabs" aria-label="Revision+ tools">
+  <button type="button" data-plus-tab="heatmap" aria-pressed="true">Topic heatmap</button>
+  <button type="button" data-plus-tab="search">Search</button>
+  <button type="button" data-plus-tab="bookmarks">Bookmarks</button>
+  <button type="button" data-plus-tab="mock">Mock exam + marker</button>
+  <button type="button" data-plus-tab="backup">Backup</button>
+  <button type="button" data-plus-tab="install">Install app</button>
+  <button type="button" data-plus-tab="battle">Scholar battle</button>
+ </nav>
+ <div id="plus-content"></div>
+ <input id="plus-import-file" type="file" accept="application/json,.json" hidden>
+</dialog>
+<script>
+(function(){
+"use strict";
+var KIND="rs",BASE_KEY="reason-faith-7062-v1",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1";
+var plus={bookmarks:[],mockHistory:[],caseMastery:{},battleNotes:{}};var tab="heatmap",mock=null,deferredInstall=null;
+function e(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});}
+function load(){try{var x=JSON.parse(localStorage.getItem(PLUS_KEY)||"null");if(x&&typeof x==="object"){plus.bookmarks=Array.isArray(x.bookmarks)?x.bookmarks:[];plus.mockHistory=Array.isArray(x.mockHistory)?x.mockHistory:[];plus.caseMastery=x.caseMastery||{};plus.battleNotes=x.battleNotes||{};}}catch(err){}}
+function save(){try{localStorage.setItem(PLUS_KEY,JSON.stringify(plus));}catch(err){}}
+function smart(){try{return JSON.parse(localStorage.getItem(SMART_KEY)||"{}")||{};}catch(err){return{};}}
+function topics(){if(KIND==="geo")return Object.keys(U).map(function(id){return{id:id,title:U[id].title};});return TOPICS.map(function(t){return{id:t.id,title:t.title};});}
+function topicTitle(id){var t=topics().find(function(x){return x.id===id;});return t?t.title:id;}
+function cards(){if(KIND==="geo"){var a=[];Object.keys(U).forEach(function(id){U[id].notes.forEach(function(n,i){a.push({id:id+":"+i,topic:id});});});return a;}return CARDS.map(function(c){return{id:c.id,topic:c.t};});}
+function heatData(){
+ var s=smart(),now=Date.now(),cs=cards();
+ return topics().map(function(t){
+  var conf=Number((s.confidence||{})[t.id]||0),ms=(s.mistakes||[]).filter(function(m){return m.topic===t.id;}).reduce(function(n,m){return n+(m.count||1);},0);
+  var tc=cs.filter(function(c){return c.topic===t.id;}),reviewed=tc.filter(function(c){return(s.sr||{})[c.id]&&(s.sr||{})[c.id].last;}).length,over=tc.filter(function(c){var r=(s.sr||{})[c.id];return r&&r.last&&r.due<=now;}).length;
+  var strength=Math.max(0,Math.min(100,(conf?conf*20:20)+(tc.length?reviewed/tc.length*25:0)-Math.min(30,ms*5)-Math.min(15,over*3)));
+  return{id:t.id,title:t.title,conf:conf,mistakes:ms,reviewed:reviewed,total:tc.length,overdue:over,strength:Math.round(strength)};
+ }).sort(function(a,b){return a.strength-b.strength;});
+}
+function index(){
+ var out=[];
+ if(KIND==="geo"){
+  Object.keys(U).forEach(function(id){var u=U[id];u.notes.forEach(function(n,i){out.push({id:"note:"+id+":"+i,type:"Topic note",topic:id,title:n[0],text:n[1]+" "+(n[2]||"")});});});
+  if(typeof CASES!=="undefined")CASES.forEach(function(c){out.push({id:"case:"+c.id,type:"Case study",topic:(c.tags&&c.tags[0])||"general",title:c.name,text:[c.location,c.stats,c.factors,c.evaluation].join(" ")});});
+ }else{
+  TOPICS.forEach(function(t){t.notes.forEach(function(n,i){out.push({id:"note:"+t.id+":"+i,type:"Topic note",topic:t.id,title:n[0],text:n[1]});});});
+  if(typeof BANK!=="undefined")BANK.forEach(function(b,i){out.push({id:"bank:"+i,type:b[2]==="quote"?"Quotation":"Scholar/source",topic:(b[0].split(" ")[0]||"general"),title:b[1],text:b[3]+" "+b[4]+" "+b[5]});});
+ }
+ return out;
+}
+function bookmarked(id){return plus.bookmarks.some(function(b){return b.id===id;});}
+function toggleBookmark(item){var i=plus.bookmarks.findIndex(function(b){return b.id===item.id;});if(i>=0)plus.bookmarks.splice(i,1);else plus.bookmarks.unshift({id:item.id,type:item.type,topic:item.topic,title:item.title,text:item.text});save();}
+function heatmapView(){var d=heatData();return'<section class="plus-box"><h3>Topic heatmap</h3><p class="muted">Red topics need attention first. The score combines confidence, mistakes, overdue cards and spaced-repetition coverage.</p><div class="heatmap">'+d.map(function(x){var band=x.strength>=80?4:x.strength>=60?3:x.strength>=40?2:x.strength>=20?1:0;return'<article class="heat" data-band="'+band+'"><div><strong>'+e(x.title)+'</strong><span>'+x.strength+'% strength</span></div><span>'+(x.conf?x.conf+"/5 confidence":"unrated")+' · '+x.mistakes+' mistakes · '+x.reviewed+'/'+x.total+' cards</span></article>';}).join("")+'</div></section>';}
+function searchView(){return'<section class="plus-box"><h3>Global search</h3><p class="muted">Search notes, '+(KIND==="geo"?"case studies":"scholars and quotes")+' across the whole website.</p><input id="plus-search" type="search" placeholder="Search a process, case study, scholar, quote or key term"><div id="plus-search-results" class="search-results"></div></section>';}
+function doSearch(q){var box=document.getElementById("plus-search-results");if(!box)return;q=String(q||"").trim().toLowerCase();if(q.length<2){box.innerHTML='<p class="muted">Type at least 2 characters.</p>';return;}var rows=index().map(function(x){var hay=(x.title+" "+x.text+" "+topicTitle(x.topic)).toLowerCase(),score=0;if(x.title.toLowerCase().includes(q))score+=4;if(hay.includes(q))score+=2;score+=q.split(/\s+/).filter(function(w){return w.length>2&&hay.includes(w);}).length;return{x:x,score:score};}).filter(function(r){return r.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,30);box.innerHTML=rows.length?rows.map(function(r){var x=r.x;return'<article class="search-item"><div class="plus-spread"><div><span class="plus-pill">'+e(x.type)+'</span><h3>'+e(x.title)+'</h3></div><button type="button" data-bookmark-id="'+e(x.id)+'">'+(bookmarked(x.id)?"Remove bookmark":"Bookmark")+'</button></div><p>'+e(x.text.slice(0,500))+(x.text.length>500?"…":"")+'</p><p class="small muted">'+e(topicTitle(x.topic))+'</p></article>';}).join(""):'<p class="muted">No results found.</p>';}
+function bookmarksView(){return'<section class="plus-box"><div class="plus-spread"><div><h3>Bookmarks</h3><p class="muted">Your saved revision items.</p></div><span class="plus-pill">'+plus.bookmarks.length+'</span></div>'+(plus.bookmarks.length?plus.bookmarks.map(function(x){return'<article class="bookmark-item"><div><span class="plus-pill">'+e(x.type)+'</span><h3>'+e(x.title)+'</h3><p>'+e(String(x.text||"").slice(0,500))+'</p><span class="small muted">'+e(topicTitle(x.topic))+'</span></div><button type="button" data-remove-bookmark="'+e(x.id)+'">Remove</button></article>';}).join(""):'<p class="muted">Nothing bookmarked yet. Use Global search to save useful material.</p>')+'</section>';}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function mockQuestion(topicId,marks){
+ if(KIND==="geo"){var u=U[topicId],n=pick(u.notes);if(marks===20&&u.prompts&&u.prompts.length)return pick(u.prompts)[0];if(marks===9)return'Assess the importance of '+n[0].toLowerCase()+' in '+u.title.toLowerCase()+'.';return'Explain how '+n[0].toLowerCase()+' influences '+u.title.toLowerCase()+'.';}
+ var t=TOPICS.find(function(x){return x.id===topicId;});if(marks===10)return t.a1||('Explain key ideas concerning '+t.title+'.');if(marks===15)return'‘'+(t.a2||('The strongest arguments concerning '+t.title+' are convincing.'))+'’ Evaluate this claim.';var ds=typeof DIALOGUES!=="undefined"?DIALOGUES.filter(function(d){return d[2].split(" ").indexOf(topicId)>=0;}):[];if(ds.length){var d=pick(ds),i=DIALOGUES.indexOf(d),claim=(typeof CLAIMS!=="undefined"&&CLAIMS[i])?CLAIMS[i]:(d[3]+' is convincing');return'‘'+claim+'’ Critically examine and evaluate this view with reference to the dialogue between Christianity and '+(d[1]==="Ethics"?"ethical studies":"philosophy")+'.';}return'Critically examine and evaluate Christian responses to '+t.title+'.';
+}
+function newMock(){
+ var ts=topics(),chosen=[];
+ while(chosen.length<3&&chosen.length<ts.length){var x=pick(ts);if(!chosen.some(function(y){return y.id===x.id;}))chosen.push(x);}
+ var marks=KIND==="geo"?[6,9,20]:[10,15,25];
+ mock={started:Date.now(),items:chosen.map(function(t,i){return{topic:t.id,marks:marks[i],q:mockQuestion(t.id,marks[i]),answer:"",result:null};})};
+}
+function significantWords(text){var stop=new Set("the and that with from this have into your their about which when where what how why are was were for but not you can may more most than then them they its use using one two does through between within".split(" "));return String(text||"").toLowerCase().replace(/[^a-z0-9%'-]+/g," ").split(/\s+/).filter(function(w){return w.length>4&&!stop.has(w)});}
+function targetTerms(topicId){
+ var txt="";
+ if(KIND==="geo"){var u=U[topicId];txt=u.title+" "+u.notes.map(function(n){return n.join(" ");}).join(" ");if(typeof CASES!=="undefined")txt+=" "+CASES.filter(function(c){return(c.tags||[]).indexOf(topicId)>=0;}).map(function(c){return[c.name,c.location,c.stats,c.factors,c.evaluation].join(" ");}).join(" ");}
+ else{var t=TOPICS.find(function(x){return x.id===topicId;});txt=t.title+" "+t.notes.map(function(n){return n.join(" ");}).join(" ");if(typeof BANK!=="undefined")txt+=" "+BANK.filter(function(b){return b[0].split(" ").indexOf(topicId)>=0;}).map(function(b){return b.slice(1).join(" ");}).join(" ");}
+ var f={};significantWords(txt).forEach(function(w){f[w]=(f[w]||0)+1;});return Object.keys(f).sort(function(a,b){return f[b]-f[a];}).slice(0,28);
+}
+function mark(item){
+ var ans=String(item.answer||""),low=ans.toLowerCase(),words=ans.trim()?ans.trim().split(/\s+/).length:0,paras=ans.split(/\n\s*\n|\n/).filter(function(x){return x.trim().length>20;}).length;
+ var terms=targetTerms(item.topic),hits=terms.filter(function(w){return low.includes(w);}).length,coverage=terms.length?hits/terms.length:0;
+ var evalWords=["however","although","whereas","on the other hand","therefore","this suggests","this means","because","depends","to an extent","overall","ultimately","nevertheless","counter","stronger","weaker","more significant","less significant","judgement","conclusion"];
+ var ev=evalWords.filter(function(w){return low.includes(w);}).length,hasConclusion=/overall|ultimately|in conclusion|on balance|to conclude|therefore/i.test(ans);
+ var evidence=(ans.match(/\b\d+(?:\.\d+)?%?|\b(19|20)\d{2}\b/g)||[]).length;
+ var named=KIND==="geo"?(typeof CASES!=="undefined"?CASES.filter(function(c){return low.includes(String(c.name||"").toLowerCase());}).length:0):(typeof BANK!=="undefined"?new Set(BANK.filter(function(b){return low.includes(String(b[1]).toLowerCase());}).map(function(b){return b[1];})).size:0);
+ var focus=significantWords(item.q).filter(function(w){return low.includes(w);}).length;
+ var ao1max,ao2max;
+ if(KIND==="rs"){ao1max=item.marks===10?10:item.marks===25?10:0;ao2max=item.marks===15?15:item.marks===25?15:0;}
+ else{ao1max=item.marks===20?10:item.marks===9?4:3;ao2max=item.marks-ao1max;}
+ var lenTarget=item.marks>=25?500:item.marks>=20?420:item.marks>=15?300:item.marks>=10?220:item.marks>=9?180:110;
+ var lenFactor=Math.min(1,words/lenTarget),knowledge=Math.min(1,coverage*.75+Math.min(1,(evidence+named)/4)*.15+lenFactor*.10);
+ var analysis=Math.min(1,Math.min(1,ev/5)*.45+(hasConclusion?0.18:0)+Math.min(1,focus/3)*.17+Math.min(1,paras/4)*.10+lenFactor*.10);
+ var ao1=Math.round(ao1max*knowledge),ao2=Math.round(ao2max*analysis);
+ if(words<35){ao1=Math.min(ao1,Math.ceil(ao1max*.25));ao2=Math.min(ao2,Math.ceil(ao2max*.2));}
+ if(ao2max&&ev===0)ao2=Math.min(ao2,Math.ceil(ao2max*.35));
+ if(KIND==="rs"&&item.marks===25&&named===0)ao1=Math.min(ao1,5);
+ var total=Math.min(item.marks,ao1+ao2),pct=item.marks?total/item.marks:0;
+ var strengths=[];if(coverage>.28)strengths.push("good relevant knowledge coverage");if(named||evidence)strengths.push(KIND==="geo"?"uses specific evidence/case material":"uses named scholarly/source material");if(ev>=3)strengths.push("sustained analysis/evaluation");if(hasConclusion)strengths.push("clear overall judgement");if(focus>=2)strengths.push("keeps returning to the wording");
+ var improve=[];if(coverage<.25)improve.push("add more precise topic knowledge and terminology");if(KIND==="geo"&&!evidence&&!named)improve.push("use located case-study evidence or precise data");if(KIND==="rs"&&!named)improve.push("use named scholars, texts or Christian sources where relevant");if(ao2max&&ev<3)improve.push("develop counterarguments and explain why one view is stronger");if(ao2max&&!hasConclusion)improve.push("finish with a justified judgement that answers the exact question");if(words<lenTarget*.55)improve.push("develop points in greater depth");
+ return{total:total,ao1:ao1,ao1max:ao1max,ao2:ao2,ao2max:ao2max,words:words,pct:pct,strengths:strengths.length?strengths:["some relevant engagement with the question"],improve:improve.length?improve:["refine precision and make every paragraph explicitly answer the question"]};
+}
+function mockView(){
+ if(!mock)newMock();
+ var total=mock.items.reduce(function(n,x){return n+x.marks;},0),last=plus.mockHistory[0];
+ return'<section class="plus-box"><div class="plus-spread"><div><h3>Mock exam mode</h3><p class="muted">Three original questions across different topics. Write your answers here, then use the AQA-style marker.</p></div><button type="button" id="plus-new-mock">New mock</button></div><div class="plus-note"><strong>Marker basis:</strong> '+(KIND==="rs"?"10-mark questions are assessed as AO1, 15-mark as AO2, and 25-mark dialogue questions as AO1 10 + AO2 15.":"20-mark essays are assessed as AO1 10 + AO2 10. For smaller generated questions, the marker uses an AQA-style approximation because exact AO splits depend on the specific question and any resource.")+' It is an estimate, not an official AQA mark.</div>'+
+ mock.items.map(function(x,i){return'<article class="mock-q"><div class="plus-spread"><div><span class="plus-pill">'+x.marks+' marks</span><span class="plus-pill">'+e(topicTitle(x.topic))+'</span></div><button type="button" data-mock-idk="'+i+'" class="idk-btn">I don’t know</button></div><h3>'+e(x.q)+'</h3><textarea data-mock-answer="'+i+'" placeholder="Write your answer here...">'+e(x.answer)+'</textarea>'+(x.result?resultHtml(x.result,x.marks):'')+'</article>';}).join("")+
+ '<div class="plus-actions"><button type="button" id="plus-mark-mock" class="plus-primary">Mark my mock</button><span class="plus-pill">Total '+total+' marks</span></div>'+(last?'<p class="small muted">Last saved mock: '+new Date(last.at).toLocaleString()+' · '+last.score+'/'+last.total+'</p>':'')+'</section>';
+}
+function resultHtml(r,max){return'<div class="mark-result"><div class="plus-spread"><div><span class="mark-big">'+r.total+' / '+max+'</span><div class="mark-breakdown">'+(r.ao1max?'<span>AO1 '+r.ao1+'/'+r.ao1max+'</span>':'')+(r.ao2max?'<span>AO2 '+r.ao2+'/'+r.ao2max+'</span>':'')+'<span>'+r.words+' words</span></div></div><span class="plus-pill">'+Math.round(r.pct*100)+'%</span></div><p><strong>Strengths:</strong> '+e(r.strengths.join("; "))+'.</p><p><strong>To improve:</strong> '+e(r.improve.join("; "))+'.</p></div>';}
+function backupView(){return'<section class="plus-box"><h3>Progress backup & import</h3><p>Export this subject’s notes/progress settings, Smart Revision history, bookmarks, mock history and mastery data. Importing replaces the saved data for this subject on this browser.</p><div class="plus-actions"><button type="button" id="plus-export" class="plus-primary">Export backup</button><button type="button" id="plus-import">Import backup</button></div></section>';}
+function installView(){var standalone=window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches;return'<section class="plus-box"><h3>Install as an app</h3><p>'+(standalone?"This website is already running in app mode.":"Install this revision site on your home screen for a more app-like experience and offline fallback.")+'</p><button type="button" id="plus-install" class="plus-primary" '+(standalone?"disabled":"")+'>Install / show instructions</button><div id="install-help" class="plus-note" hidden></div></section>';}
+function caseView(){
+ var cases=typeof CASES!=="undefined"?CASES:[];if(!cases.length)return'<section class="plus-box"><p>No case studies available.</p></section>';var id=(window._plusCaseId&&cases.some(function(c){return c.id===window._plusCaseId;}))?window._plusCaseId:cases[0].id,c=cases.find(function(x){return x.id===id;}),m=plus.caseMastery[id]||{};
+ var fields=[["Location / role",c.location],["Key statistics",c.stats],["Processes / factors",c.factors],["Evaluation",c.evaluation],["Source",c.sourceLabel]];
+ return'<section class="plus-box"><h3>Case Study Mastery</h3><label>Case study<select id="plus-case-select">'+cases.map(function(x){return'<option value="'+e(x.id)+'" '+(x.id===id?"selected":"")+'>'+e(x.name)+'</option>';}).join("")+'</select></label><div class="master-meter">'+fields.map(function(_,i){return'<span class="'+(m[i]?"on":"")+'"></span>';}).join("")+'</div><p class="small muted">'+Object.keys(m).filter(function(k){return m[k];}).length+' / 5 areas secure</p><div class="plus-grid">'+fields.map(function(f,i){return'<article class="master-card"><span class="plus-pill">'+e(f[0])+'</span><h3>'+e(c.name)+'</h3><details><summary>Recall first, then reveal</summary><p>'+e(f[1]||"Add this detail in the main case-study editor.")+'</p></details><button type="button" data-case-master="'+i+'" class="'+(m[i]?"plus-primary":"")+'">'+(m[i]?"Secure ✓":"Mark secure")+'</button></article>';}).join("")+'</div></section>';
+}
+function scholars(){
+ var map={};if(typeof BANK!=="undefined")BANK.forEach(function(b){var n=b[1];if(!map[n])map[n]=[];map[n].push(b);});return map;
+}
+function battleView(){
+ var map=scholars(),names=Object.keys(map).sort();if(names.length<2)return'<section class="plus-box"><p>Not enough scholar entries.</p></section>';
+ var a=window._battleA&&map[window._battleA]?window._battleA:names[0],b=window._battleB&&map[window._battleB]?window._battleB:names.find(function(n){return n!==a;})||names[1],key=a+" vs "+b,note=plus.battleNotes[key]||"";
+ function card(n){return'<article class="battle-card"><h3>'+e(n)+'</h3><ul>'+map[n].slice(0,6).map(function(x){return'<li>'+e(x[3])+' <span class="small muted">— '+e(x[4])+'</span></li>';}).join("")+'</ul></article>';}
+ return'<section class="plus-box"><h3>Scholar Battle</h3><p class="muted">Put two thinkers side by side, then make your own AO2 judgement.</p><div class="plus-grid"><label>Scholar A<select id="battle-a">'+names.map(function(n){return'<option '+(n===a?"selected":"")+'>'+e(n)+'</option>';}).join("")+'</select></label><label>Scholar B<select id="battle-b">'+names.map(function(n){return'<option '+(n===b?"selected":"")+'>'+e(n)+'</option>';}).join("")+'</select></label></div><div class="battle-columns">'+card(a)+card(b)+'</div><div class="plus-note"><strong>Battle prompt:</strong> Which thinker gives the stronger argument, and why? Identify one strength, one criticism and a justified conclusion.</div><textarea id="battle-note" placeholder="Write your judgement...">'+e(note)+'</textarea><button type="button" id="save-battle" class="plus-primary">Save judgement</button></section>';
+}
+function render(){document.querySelectorAll("[data-plus-tab]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.plusTab===tab));});var c=document.getElementById("plus-content");c.innerHTML=tab==="heatmap"?heatmapView():tab==="search"?searchView():tab==="bookmarks"?bookmarksView():tab==="mock"?mockView():tab==="backup"?backupView():tab==="install"?installView():tab==="battle"?battleView():heatmapView();if(tab==="search")doSearch("");}
+function open(){render();var d=document.getElementById("revision-plus-dialog");if(d.showModal)d.showModal();else d.setAttribute("open","");}
+function close(){var d=document.getElementById("revision-plus-dialog");if(d.close)d.close();else d.removeAttribute("open");}
+function download(name,text){var u=URL.createObjectURL(new Blob([text],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},1000);}
+function exportBackup(){var o={version:1,site:KIND,exportedAt:new Date().toISOString(),data:{}};[BASE_KEY,SMART_KEY,PLUS_KEY].forEach(function(k){o.data[k]=localStorage.getItem(k);});download((KIND==="geo"?"geography":"rs")+"-revision-backup.json",JSON.stringify(o,null,2));}
+function importBackup(file){var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);if(!o||o.version!==1||o.site!==KIND||!o.data)throw Error();[BASE_KEY,SMART_KEY,PLUS_KEY].forEach(function(k){if(typeof o.data[k]==="string")localStorage.setItem(k,o.data[k]);});location.reload();}catch(err){alert("That backup is not valid for this revision site.");}};r.readAsText(file);}
+function addSmartIdk(){
+ var reveal=document.querySelector("#smart-revision-dialog #sr-reveal");if(!reveal||document.getElementById("smart-idk"))return;var b=document.createElement("button");b.type="button";b.id="smart-idk";b.className="idk-btn";b.textContent="I don’t know";reveal.insertAdjacentElement("afterend",b);b.addEventListener("click",function(){
+   var q=document.querySelector("#smart-revision-dialog .sr-flash h3"),title=document.querySelector("#smart-revision-dialog .sr-flash .eyebrow"),s=smart();s.mistakes=Array.isArray(s.mistakes)?s.mistakes:[];
+   var topic=topics().find(function(t){return title&&t.title===title.textContent.trim();});s.mistakes.unshift({id:Date.now()+"-idk",topic:topic?topic.id:"general",q:q?q.textContent:"Flashcard not recalled",answer:"",note:"Marked I don’t know",count:1,at:Date.now()});try{localStorage.setItem(SMART_KEY,JSON.stringify(s));}catch(err){}
+   reveal.click();setTimeout(function(){var again=document.querySelector('#smart-revision-dialog [data-sr-rate="again"]');if(again)again.click();},30);
+ });}
+load();document.getElementById("revision-plus-launch").addEventListener("click",open);document.getElementById("plus-close").addEventListener("click",close);
+document.getElementById("revision-plus-dialog").addEventListener("input",function(ev){if(ev.target.id==="plus-search")doSearch(ev.target.value);if(ev.target.matches("[data-mock-answer]")&&mock)mock.items[Number(ev.target.dataset.mockAnswer)].answer=ev.target.value;});
+document.getElementById("revision-plus-dialog").addEventListener("change",function(ev){
+ if(ev.target.id==="plus-case-select"){window._plusCaseId=ev.target.value;render();}
+ if(ev.target.id==="battle-a"){window._battleA=ev.target.value;render();}
+ if(ev.target.id==="battle-b"){window._battleB=ev.target.value;render();}
+});
+document.getElementById("revision-plus-dialog").addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;
+ if(b.dataset.plusTab){tab=b.dataset.plusTab;render();return;}
+ if(b.dataset.bookmarkId){var it=index().find(function(x){return x.id===b.dataset.bookmarkId;});if(it){toggleBookmark(it);doSearch(document.getElementById("plus-search").value);}return;}
+ if(b.dataset.removeBookmark){plus.bookmarks=plus.bookmarks.filter(function(x){return x.id!==b.dataset.removeBookmark;});save();render();return;}
+ if(b.id==="plus-new-mock"){newMock();render();return;}
+ if(b.dataset.mockIdk!==undefined&&mock){var it=mock.items[Number(b.dataset.mockIdk)],s=smart();s.mistakes=Array.isArray(s.mistakes)?s.mistakes:[];s.mistakes.unshift({id:Date.now()+"-mock",topic:it.topic,q:it.q,answer:"",note:"Mock question marked I don’t know",count:1,at:Date.now()});try{localStorage.setItem(SMART_KEY,JSON.stringify(s));}catch(err){}b.textContent="Added to mistakes ✓";b.disabled=true;return;}
+ if(b.id==="plus-mark-mock"&&mock){mock.items.forEach(function(x){x.result=mark(x);});var score=mock.items.reduce(function(n,x){return n+x.result.total;},0),total=mock.items.reduce(function(n,x){return n+x.marks;},0);plus.mockHistory.unshift({at:Date.now(),score:score,total:total,items:mock.items.map(function(x){return{topic:x.topic,marks:x.marks,q:x.q,result:x.result};})});plus.mockHistory=plus.mockHistory.slice(0,25);save();render();return;}
+ if(b.id==="plus-export"){exportBackup();return;}if(b.id==="plus-import"){document.getElementById("plus-import-file").click();return;}
+ if(b.id==="plus-install"){var help=document.getElementById("install-help");if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(function(){deferredInstall=null;});}else{help.hidden=false;help.innerHTML=/iphone|ipad|ipod/i.test(navigator.userAgent)?"On iPhone/iPad: tap <strong>Share</strong> in Safari, then <strong>Add to Home Screen</strong>.":"Open your browser menu and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>. If that option is not shown yet, reload once after this update."; }return;}
+ if(b.dataset.caseMaster!==undefined){var sel=document.getElementById("plus-case-select"),id=sel.value;plus.caseMastery[id]=plus.caseMastery[id]||{};var i=b.dataset.caseMaster;plus.caseMastery[id][i]=!plus.caseMastery[id][i];save();render();return;}
+ if(b.id==="save-battle"){var a=document.getElementById("battle-a").value,c=document.getElementById("battle-b").value;plus.battleNotes[a+" vs "+c]=document.getElementById("battle-note").value;save();b.textContent="Saved ✓";return;}
+});
+document.getElementById("plus-import-file").addEventListener("change",function(ev){var f=ev.target.files&&ev.target.files[0];if(f)importBackup(f);ev.target.value="";});
+window.addEventListener("beforeinstallprompt",function(ev){ev.preventDefault();deferredInstall=ev;});
+if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(){});});
+new MutationObserver(addSmartIdk).observe(document.body,{childList:true,subtree:true});addSmartIdk();
 })();
 </script>
 </body>
