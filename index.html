@@ -13,6 +13,15 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
 label,input,select,textarea,.grid>*,.planner>*,.brand{min-width:0}.row>label{max-width:100%}
 @media print{body{background:white;color:black}.top,.paper-tabs,.bar,.tools,.footer,.no-print,#notice{display:none!important}.wrap{max-width:none}.card,.callout{background:white;color:black;border-color:#777;break-inside:avoid}.planner{display:block}.planner>.card{margin:1rem 0}textarea,input{color:black;background:white;border:1px solid #777}textarea{height:180px}.muted,.eyebrow,.badge{color:#333}a{color:black}}
+
+/* Smart Revision */
+.smart-launch{position:fixed;right:1rem;bottom:1rem;z-index:50;background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important;box-shadow:0 8px 30px #0008}
+.smart-dialog{width:min(920px,96vw);max-height:92vh;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);padding:1.2rem}
+.smart-dialog::backdrop{background:#000c}.sr-head,.sr-spread{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.sr-tabs{display:flex;gap:.4rem;overflow:auto;padding:.75rem 0 1rem;margin-bottom:1rem;border-bottom:1px solid var(--line)}.sr-tabs button{white-space:nowrap}.sr-tabs button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}.sr-box{border:1px solid var(--line);border-radius:14px;padding:1rem;background:var(--raised);margin-bottom:1rem}.sr-box h3{margin-top:0}.sr-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}.sr-metrics>div{border:1px solid var(--line);border-radius:12px;padding:1rem;text-align:center;background:var(--raised)}.sr-metrics strong{display:block;font-size:1.7rem;color:var(--accent)}.sr-metrics span{font-size:.8rem;color:var(--muted)}.sr-rating,.sr-rate-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0}.sr-rating button{min-width:48px}.sr-on,.sr-primary{background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important}.sr-weak{display:grid;gap:.7rem}.sr-weak article,.sr-mistakes article{border:1px solid var(--line);border-radius:10px;padding:.8rem}.sr-weak progress{margin:.45rem 0}.sr-pill{border:1px solid var(--line);border-radius:999px;padding:.2rem .65rem;color:var(--muted);white-space:nowrap}.sr-flash{min-height:240px;border:1px solid var(--line);border-radius:14px;padding:1.4rem;margin:1rem 0;display:flex;flex-direction:column;justify-content:center;background:var(--surface)}.sr-flash h3{font-size:1.25rem}.sr-two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:.8rem 0}.sr-question{margin-top:1rem;border-left:3px solid var(--accent);padding:1rem;background:var(--surface)}.sr-mistakes{display:grid;gap:.7rem;margin-top:1rem}.sr-mistakes article{display:flex;justify-content:space-between;gap:1rem}.sr-mistakes p{margin:.35rem 0}.sr-empty{padding:1.5rem;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+@media(max-width:700px){.smart-dialog{width:100vw;max-width:none;height:100dvh;max-height:none;border-radius:0;margin:0;padding:.9rem}.sr-metrics{grid-template-columns:1fr}.sr-two{grid-template-columns:1fr}.sr-tabs{position:sticky;top:0;background:var(--surface);z-index:2}.smart-launch{right:.75rem;bottom:.75rem}.sr-mistakes article{display:block}.sr-mistakes article button{margin-top:.5rem}}
+body.smart-mobile{font-size:17px}body.smart-mobile .shell,body.smart-mobile .wrap{max-width:760px;padding:.75rem}body.smart-mobile button{min-height:50px}body.smart-mobile .grid,body.smart-mobile .planner,body.smart-mobile .filters,body.smart-mobile .controls{grid-template-columns:1fr!important}body.smart-mobile .components,body.smart-mobile .tools,body.smart-mobile .paper-tabs{overflow-x:auto;flex-wrap:nowrap!important;display:flex!important;position:sticky;top:0;z-index:5;background:var(--bg);padding:.6rem 0}body.smart-mobile .components button,body.smart-mobile .tools button,body.smart-mobile .paper-tabs button{white-space:nowrap;flex:0 0 auto}body.smart-mobile .face{min-height:300px}
+
+
 </style>
 </head>
 <body>
@@ -487,6 +496,161 @@ $("#import-file").addEventListener("change",async e=>{
 });
 $("#sources").innerHTML=SOURCES.map(([label,url])=>'<li><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a></li>').join("");
 fillTopics();resetDeck();updateStatus();renderActive();
+</script>
+
+<!-- Smart Revision enhancement -->
+<button id="smart-launch" class="smart-launch no-print" type="button" aria-haspopup="dialog">Smart revision</button>
+<dialog id="smart-revision-dialog" class="smart-dialog no-print" aria-labelledby="sr-title">
+  <div class="sr-head"><div><p class="eyebrow">Adaptive study tools</p><h2 id="sr-title">Smart Revision</h2></div><button id="sr-close" type="button" aria-label="Close Smart Revision">Close</button></div>
+  <nav class="sr-tabs" aria-label="Smart Revision sections">
+    <button type="button" data-sr-tab="dashboard" aria-pressed="true">Dashboard</button>
+    <button type="button" data-sr-tab="cards">Spaced repetition</button>
+    <button type="button" data-sr-tab="exam">Question generator</button>
+    <button type="button" data-sr-tab="mistakes">Mistakes bank</button>
+    <button type="button" data-sr-tab="mobile">Mobile mode</button>
+  </nav>
+  <div id="sr-content"></div>
+</dialog>
+<script>
+(function(){
+"use strict";
+var SR_KIND="rs", SR_KEY=SR_KIND==="geo"?"aqa-geo-smart-v1":"aqa-rs-smart-v1";
+var srState={confidence:{},sr:{},mistakes:[],mobile:false};
+var srTab="dashboard",srReveal=false,srCardTopic="all",srExamTopic="all",srExamQuestion="";
+function srEsc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});}
+function srLoad(){try{var x=JSON.parse(localStorage.getItem(SR_KEY)||"null");if(x&&typeof x==="object"){srState.confidence=x.confidence||{};srState.sr=x.sr||{};srState.mistakes=Array.isArray(x.mistakes)?x.mistakes.slice(0,500):[];srState.mobile=!!x.mobile;}}catch(e){}document.body.classList.toggle("smart-mobile",srState.mobile);}
+function srSave(){try{localStorage.setItem(SR_KEY,JSON.stringify(srState));}catch(e){}document.body.classList.toggle("smart-mobile",srState.mobile);}
+function srTopics(){
+ if(SR_KIND==="geo") return Object.keys(U).map(function(id){return{id:id,title:U[id].title};});
+ return TOPICS.map(function(t){return{id:t.id,title:t.title};});
+}
+function srCards(){
+ if(SR_KIND==="geo"){var out=[];Object.keys(U).forEach(function(id){U[id].notes.forEach(function(n,i){out.push({id:id+":"+i,topic:id,title:U[id].title,q:n[0],a:n[1]+(n[2]?" "+n[2]:"")});});});return out;}
+ return CARDS.map(function(c){return{id:c.id,topic:c.t,title:c.title,q:c.q,a:c.a};});
+}
+function srTopicTitle(id){var t=srTopics().find(function(x){return x.id===id;});return t?t.title:id;}
+function srRec(id){return srState.sr[id]||{reps:0,interval:0,ease:2.5,due:0,last:0};}
+function srDue(card){var r=srRec(card.id);return !r.last||r.due<=Date.now();}
+function srDueCards(){
+ return srCards().filter(function(c){return(srCardTopic==="all"||c.topic===srCardTopic)&&srDue(c);}).sort(function(a,b){return srRec(a.id).due-srRec(b.id).due;});
+}
+function srRate(card,rating){
+ var x=srRec(card.id),now=Date.now(),day=86400000;
+ if(rating==="again"){x.reps=0;x.interval=0;x.ease=Math.max(1.3,x.ease-.2);x.due=now+10*60000;}
+ else if(rating==="hard"){x.reps+=1;x.interval=x.interval?Math.max(1,Math.round(x.interval*1.2)):1;x.ease=Math.max(1.3,x.ease-.15);x.due=now+x.interval*day;}
+ else if(rating==="good"){x.reps+=1;x.interval=x.reps===1?1:x.reps===2?3:Math.max(1,Math.round((x.interval||1)*x.ease));x.due=now+x.interval*day;}
+ else{x.reps+=1;x.ease=Math.min(3.2,x.ease+.15);x.interval=x.reps===1?4:Math.max(4,Math.round((x.interval||1)*x.ease*1.3));x.due=now+x.interval*day;}
+ x.last=now;srState.sr[card.id]=x;srSave();srReveal=false;srRender();
+}
+function srAddMistake(topic,q,answer,note){
+ q=String(q||"").trim();if(!q)return;
+ var old=srState.mistakes.find(function(m){return m.q===q&&m.topic===topic;});
+ if(old){old.count=(old.count||1)+1;old.at=Date.now();if(answer)old.answer=answer;if(note)old.note=note;}
+ else srState.mistakes.unshift({id:Date.now()+"-"+Math.random().toString(36).slice(2,7),topic:topic||"general",q:q,answer:answer||"",note:note||"",count:1,at:Date.now()});
+ srState.mistakes=srState.mistakes.slice(0,500);srSave();
+}
+function srWeak(){
+ var cards=srCards(),now=Date.now();
+ return srTopics().map(function(t){
+  var conf=Number(srState.confidence[t.id]||0),mist=srState.mistakes.filter(function(m){return m.topic===t.id;}).reduce(function(n,m){return n+(m.count||1);},0);
+  var tc=cards.filter(function(c){return c.topic===t.id;}),due=tc.filter(function(c){var r=srRec(c.id);return r.last&&r.due<=now;}).length;
+  var reviewed=tc.filter(function(c){return !!srRec(c.id).last;}).length;
+  var score=(conf?100-conf*16:100)+Math.min(24,mist*4)+Math.min(12,due*2)-Math.min(18,reviewed*1.5);
+  return{id:t.id,title:t.title,conf:conf,mist:mist,due:due,reviewed:reviewed,total:tc.length,score:score};
+ }).sort(function(a,b){return b.score-a.score;});
+}
+function srSelect(id,value,allLabel){
+ return '<select id="'+id+'"><option value="all">'+srEsc(allLabel||"All topics")+'</option>'+srTopics().map(function(t){return'<option value="'+srEsc(t.id)+'" '+(value===t.id?"selected":"")+'>'+srEsc(t.title)+'</option>';}).join("")+'</select>';
+}
+function srDashboard(){
+ var weak=srWeak(),due=srCards().filter(srDue).length,unrated=weak.filter(function(x){return!x.conf;}).length;
+ var pick=srExamTopic!=="all"?srExamTopic:(weak[0]?weak[0].id:"all"),conf=Number(srState.confidence[pick]||0);
+ return '<div class="sr-metrics"><div><strong>'+due+'</strong><span>cards due</span></div><div><strong>'+srState.mistakes.length+'</strong><span>saved mistakes</span></div><div><strong>'+unrated+'</strong><span>topics unrated</span></div></div>'+
+ '<section class="sr-box"><h3>Confidence rating</h3><p class="muted small">Rate how confidently you could answer an exam question on this topic without notes.</p><label>Topic'+srSelect("sr-confidence-topic",pick,"Choose a topic")+'</label><div class="sr-rating" role="group" aria-label="Confidence from 1 to 5">'+[1,2,3,4,5].map(function(n){return'<button type="button" data-sr-confidence="'+n+'" class="'+(conf===n?"sr-on":"")+'">'+n+'</button>';}).join("")+'</div><p class="small muted">1 = very unsure · 5 = exam-ready</p></section>'+
+ '<section class="sr-box"><div class="sr-spread"><div><h3>Weak-topic dashboard</h3><p class="muted small">Prioritised from confidence, mistakes, overdue cards and review history.</p></div></div><div class="sr-weak">'+weak.slice(0,8).map(function(x){var strength=x.conf?x.conf*20:0;return'<article><div class="sr-spread"><strong>'+srEsc(x.title)+'</strong><span>'+(x.conf?x.conf+"/5 confidence":"Not rated")+'</span></div><progress max="100" value="'+strength+'"></progress><p class="small muted">'+x.mist+' mistake'+(x.mist===1?"":"s")+' · '+x.due+' overdue · '+x.reviewed+'/'+x.total+' cards reviewed</p><button type="button" data-sr-study="'+srEsc(x.id)+'">Revise this topic</button></article>';}).join("")+'</div></section>';
+}
+function srCardsView(){
+ var due=srDueCards(),c=due[0];
+ return '<section class="sr-box"><div class="sr-spread"><div><h3>Spaced-repetition flashcards</h3><p class="muted small">Cards reschedule themselves from your recall rating.</p></div><span class="sr-pill">'+due.length+' due</span></div><label>Deck'+srSelect("sr-card-topic",srCardTopic,"All topics")+'</label>'+
+ (c?'<div class="sr-flash"><p class="eyebrow">'+srEsc(c.title)+'</p><h3>'+srEsc(srReveal?c.a:c.q)+'</h3><p class="muted small">'+(srReveal?"Rate how difficult retrieval felt.":"Recall aloud before revealing.")+'</p></div>'+
+ (!srReveal?'<button type="button" id="sr-reveal" class="sr-primary">Reveal answer</button>':'<div class="sr-rate-row"><button type="button" data-sr-rate="again">Again · 10m</button><button type="button" data-sr-rate="hard">Hard</button><button type="button" data-sr-rate="good" class="sr-primary">Good</button><button type="button" data-sr-rate="easy">Easy</button></div>')+
+ '<p class="small muted">Current interval: '+(srRec(c.id).interval||0)+' day(s) · Ease '+srRec(c.id).ease.toFixed(2)+'</p>':'<div class="sr-empty"><h3>Nothing due right now</h3><p>Choose another topic or come back when cards become due.</p></div>')+'</section>';
+}
+function srGenerateExam(){
+ var topics=srTopics(),id=srExamTopic==="all"?topics[Math.floor(Math.random()*topics.length)].id:srExamTopic,q="",label="";
+ if(SR_KIND==="geo"){
+  var marks=Number(document.getElementById("sr-exam-marks")&&document.getElementById("sr-exam-marks").value||20),u=U[id],n=u.notes[Math.floor(Math.random()*u.notes.length)];
+  if(marks===20&&u.prompts&&u.prompts.length){q=u.prompts[Math.floor(Math.random()*u.prompts.length)][0];}
+  else if(marks===9){q="Assess the importance of "+n[0].toLowerCase()+" in shaping "+u.title.toLowerCase()+"."; }
+  else{q="Analyse the role of "+n[0].toLowerCase()+" within "+u.title.toLowerCase()+"."; }
+  label=marks+" marks · Original practice question";
+ }else{
+  var marks=Number(document.getElementById("sr-exam-marks")&&document.getElementById("sr-exam-marks").value||15),t=TOPICS.find(function(x){return x.id===id;});
+  if(marks===10)q=t.a1||("Examine key ideas about "+t.title+".");
+  else if(marks===15)q="‘"+(t.a2||("The strongest arguments about "+t.title+" are convincing."))+"’ Evaluate this claim.";
+  else{
+   var ds=typeof DIALOGUES!=="undefined"?DIALOGUES.filter(function(d){return d[2].split(" ").indexOf(id)>=0;}):[];
+   if(ds.length){var d=ds[Math.floor(Math.random()*ds.length)],idx=DIALOGUES.indexOf(d),cl=(typeof CLAIMS!=="undefined"&&CLAIMS[idx])?CLAIMS[idx]:(d[3]+" is convincing");q="‘"+cl+"’ Critically examine and evaluate this view with reference to the dialogue between Christianity and "+(d[1]==="Ethics"?"ethical studies":"philosophy")+".";}
+   else q="Critically examine and evaluate Christian responses to "+t.title+".";
+  }
+  label=marks+" marks · Original practice question";
+ }
+ srExamTopic=id;srExamQuestion=q;return{topic:id,q:q,label:label};
+}
+function srExamView(){
+ var marks=SR_KIND==="geo"?[6,9,20]:[10,15,25];
+ return '<section class="sr-box"><h3>Exam-question generator</h3><p class="muted small">Generate original practice questions from the content already in this site. These are not official AQA questions.</p><div class="sr-two"><label>Topic'+srSelect("sr-exam-topic",srExamTopic,"Random topic")+'</label><label>Marks<select id="sr-exam-marks">'+marks.map(function(m){return'<option value="'+m+'">'+m+' marks</option>';}).join("")+'</select></label></div><button type="button" id="sr-generate" class="sr-primary">Generate question</button>'+
+ (srExamQuestion?'<div class="sr-question"><p class="eyebrow">Practice question</p><h3>'+srEsc(srExamQuestion)+'</h3><div class="sr-rate-row"><button type="button" id="sr-new-question">New question</button><button type="button" id="sr-struggled">I struggled with this</button></div></div>':'')+'</section>';
+}
+function srMistakesView(){
+ return '<section class="sr-box"><div class="sr-spread"><div><h3>Mistakes bank</h3><p class="muted small">Wrong quiz answers are added automatically. Add your own misconceptions too.</p></div><span class="sr-pill">'+srState.mistakes.length+'</span></div><div class="sr-two"><label>Topic'+srSelect("sr-mistake-topic","all","General / choose topic")+'</label><label>Mistake or misconception<input id="sr-mistake-text" type="text" placeholder="e.g. I confused infiltration with percolation"></label></div><button type="button" id="sr-add-mistake" class="sr-primary">Add mistake</button>'+
+ '<div class="sr-mistakes">'+(srState.mistakes.length?srState.mistakes.slice(0,50).map(function(m){return'<article><div><strong>'+srEsc(srTopicTitle(m.topic))+'</strong><p>'+srEsc(m.q)+'</p>'+(m.answer?'<p class="small muted">Review: '+srEsc(m.answer)+'</p>':'')+'<span class="small muted">Seen '+(m.count||1)+' time'+((m.count||1)===1?"":"s")+'</span></div><button type="button" data-sr-delete="'+srEsc(m.id)+'" aria-label="Delete this mistake">Delete</button></article>';}).join(""):'<div class="sr-empty">No mistakes saved yet. Quiz errors will appear here automatically.</div>')+'</div></section>';
+}
+function srMobileView(){
+ return '<section class="sr-box"><h3>Mobile revision mode</h3><p>Optimises the site for quick phone sessions: larger tap targets, single-column cards, horizontally scrollable navigation and a more focused layout.</p><button type="button" id="sr-mobile-toggle" class="'+(srState.mobile?"sr-primary":"")+'">'+(srState.mobile?"Turn mobile mode off":"Turn mobile mode on")+'</button><p class="small muted">Your choice is saved on this browser.</p></section>';
+}
+function srRender(){
+ var el=document.getElementById("sr-content");if(!el)return;
+ document.querySelectorAll("[data-sr-tab]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.srTab===srTab));});
+ el.innerHTML=srTab==="dashboard"?srDashboard():srTab==="cards"?srCardsView():srTab==="exam"?srExamView():srTab==="mistakes"?srMistakesView():srMobileView();
+}
+function srOpen(){var d=document.getElementById("smart-revision-dialog");srRender();if(d.showModal)d.showModal();else d.setAttribute("open","");}
+function srClose(){var d=document.getElementById("smart-revision-dialog");if(d.close)d.close();else d.removeAttribute("open");}
+srLoad();
+document.getElementById("smart-launch").addEventListener("click",srOpen);
+document.getElementById("sr-close").addEventListener("click",srClose);
+document.getElementById("smart-revision-dialog").addEventListener("click",function(e){
+ var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.srTab){srTab=b.dataset.srTab;srRender();return;}
+ if(b.dataset.srConfidence){var sel=document.getElementById("sr-confidence-topic");if(sel&&sel.value!=="all"){srState.confidence[sel.value]=Number(b.dataset.srConfidence);srSave();srRender();}return;}
+ if(b.dataset.srStudy){srCardTopic=b.dataset.srStudy;srTab="cards";srReveal=false;srRender();return;}
+ if(b.id==="sr-reveal"){srReveal=true;srRender();return;}
+ if(b.dataset.srRate){var c=srDueCards()[0];if(c)srRate(c,b.dataset.srRate);return;}
+ if(b.id==="sr-generate"||b.id==="sr-new-question"){var g=srGenerateExam();srExamQuestion=g.q;srRender();return;}
+ if(b.id==="sr-struggled"){srAddMistake(srExamTopic,srExamQuestion,"","Generated question marked for review.");srTab="mistakes";srRender();return;}
+ if(b.id==="sr-add-mistake"){var t=document.getElementById("sr-mistake-topic"),q=document.getElementById("sr-mistake-text");if(q&&q.value.trim()){srAddMistake(t&&t.value!=="all"?t.value:"general",q.value,"","Manual note");q.value="";srRender();}return;}
+ if(b.dataset.srDelete){srState.mistakes=srState.mistakes.filter(function(m){return m.id!==b.dataset.srDelete;});srSave();srRender();return;}
+ if(b.id==="sr-mobile-toggle"){srState.mobile=!srState.mobile;srSave();srRender();return;}
+});
+document.getElementById("smart-revision-dialog").addEventListener("change",function(e){
+ if(e.target.id==="sr-card-topic"){srCardTopic=e.target.value;srReveal=false;srRender();}
+ if(e.target.id==="sr-exam-topic")srExamTopic=e.target.value;
+ if(e.target.id==="sr-confidence-topic"){srExamTopic=e.target.value;srRender();}
+});
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button[data-answer]");if(!b)return;
+ try{
+  if(SR_KIND==="geo"&&b.closest(".answers")&&Number(b.dataset.answer)!==0){
+   var q=document.getElementById("quiz-question");var id=typeof current==="function"?current():"general";var item=U[id].quiz[quiz().order[quiz().at]];
+   srAddMistake(id,q?q.textContent:item[0],item[1][0],item[2]);
+  }
+  if(SR_KIND==="rs"&&b.closest(".options")&&typeof quizSession!=="undefined"&&quizSession){
+   var x=quizSession.items[quizSession.at],correct=x.options.indexOf(x.t.quiz[1]);
+   if(Number(b.dataset.answer)!==correct)srAddMistake(x.t.id,x.t.quiz[0],x.t.quiz[1],x.t.quiz[5]);
+  }
+ }catch(err){}
+},true);
+})();
 </script>
 </body>
 </html>
