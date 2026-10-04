@@ -726,7 +726,7 @@ document.addEventListener("click",function(e){
 <script>
 (function(){
 "use strict";
-var KIND="rs",BASE_KEY="reason-faith-7062-v1",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1",CUSTOM_KEY="aqa-rs-custom-cards-v1";
+var KIND="rs",BASE_KEY="reason-faith-7062-v1",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1",CUSTOM_KEY="aqa-rs-custom-cards-v1",PERF_KEY="aqa-rs-performance-v1";
 var plus={bookmarks:[],mockHistory:[],caseMastery:{},battleNotes:{}};var tab="heatmap",mock=null,deferredInstall=null;
 function e(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});}
 function load(){try{var x=JSON.parse(localStorage.getItem(PLUS_KEY)||"null");if(x&&typeof x==="object"){plus.bookmarks=Array.isArray(x.bookmarks)?x.bookmarks:[];plus.mockHistory=Array.isArray(x.mockHistory)?x.mockHistory:[];plus.caseMastery=x.caseMastery||{};plus.battleNotes=x.battleNotes||{};}}catch(err){}}
@@ -885,7 +885,7 @@ new MutationObserver(addSmartIdk).observe(document.body,{childList:true,subtree:
 <script>
 (function(){
 "use strict";
-var KIND="rs",BASE_KEY="reason-faith-7062-v1",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1",LAB_KEY="aqa-rs-study-lab-v1",CUSTOM_KEY="aqa-rs-custom-cards-v1";
+var KIND="rs",BASE_KEY="reason-faith-7062-v1",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1",LAB_KEY="aqa-rs-study-lab-v1",CUSTOM_KEY="aqa-rs-custom-cards-v1",PERF_KEY="aqa-rs-performance-v1";
 var lab={notes:{},resources:[],adaptive:{},essayDrafts:{},improvements:[],quoteStats:{},dataStats:{},savedSets:[]};
 var tab="essay",adaptive=null,modelTopic=null,essayTopic=null,essayQuestion="",activeSet=[],dataIndex=0,quoteIndex=0,quoteReveal=false;
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});}
