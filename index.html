@@ -1097,7 +1097,7 @@ function logQuestion(q,topic,source,marks,attempted,score){
 }
 window.__aqaLogQuestion=logQuestion;
 function seedHistory(){
- var plus=read(PLUS_KEY,{});(plus.mockHistory||[]).forEach(function(m){(m.items||[]).forEach(function(x){logQuestion(x.q,x.topic,"Mock exam",x.marks,true,x.result&&x.marks?Math.round((x.result.total/x.marks)*100):null);});});
+ var plus=read(PLUS_KEY,{});(plus.mockHistory||[]).forEach(function(m){(m.items||[]).forEach(function(x){if(!perf.questions.some(function(q){return q.q===x.q;}))logQuestion(x.q,x.topic,"Mock exam",x.marks,true,x.result&&x.marks?Math.round((x.result.total/x.marks)*100):null);});});
 }
 function avg(arr){return arr.length?arr.reduce(function(a,b){return a+b;},0)/arr.length:0;}
 function analytics(){
