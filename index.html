@@ -1039,7 +1039,21 @@ document.getElementById("toolbox-dialog").addEventListener("change",function(ev)
 document.getElementById("toolbox-dialog").addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;if(b.id==="speed-start"){startSpeed();return;}if(b.id==="speed-check"){scoreSpeed();return;}if(b.id==="speed-skip"){speed.attempts++;pickDef();render();return;}if(b.id==="compare-run"){doCompare();return;}if(b.id==="print-now"){var sheet=document.getElementById("print-sheet");sheet.innerHTML=sheetHtml(printTopic,true);sheet.style.display="block";sheet.setAttribute("aria-hidden","false");document.body.classList.add("printing-sheet");window.print();setTimeout(function(){document.body.classList.remove("printing-sheet");sheet.style.display="";sheet.setAttribute("aria-hidden","true");},300);return;}});
 window.addEventListener("afterprint",function(){document.body.classList.remove("printing-sheet");var s=document.getElementById("print-sheet");s.style.display="";s.setAttribute("aria-hidden","true");});
 function shortcutOpen(selector,tabSelector,focusSelector){document.querySelector(selector)?.click();setTimeout(function(){document.querySelector(tabSelector)?.click();setTimeout(function(){document.querySelector(focusSelector)?.focus();},20);},20);}
-document.addEventListener("keydown",function(ev){if(ev.ctrlKey||ev.metaKey||ev.altKey)return;var tag=(ev.target.tagName||"").toLowerCase();if(tag==="input"||tag==="textarea"||tag==="select"||ev.target.isContentEditable)return;var k=ev.key;if(k==="/"){ev.preventDefault();shortcutOpen("#revision-plus-launch",'[data-plus-tab="search"]',"#plus-search");}else if(k==="f"||k==="F"){ev.preventDefault();shortcutOpen("#smart-launch",'[data-sr-tab="cards"]',"#sr-reveal");}else if(k==="q"||k==="Q"){ev.preventDefault();shortcutOpen("#study-lab-launch",'[data-lab-tab="adaptive"]",'[data-adapt-answer]');}else if(k==="m"||k==="M"){ev.preventDefault();shortcutOpen("#smart-launch",'[data-sr-tab="mistakes"]',"#sr-mistake-text");}else if(k==="d"||k==="D"){ev.preventDefault();open("speed");}else if(k==="c"||k==="C"){ev.preventDefault();open("compare");}else if(k==="p"||k==="P"){ev.preventDefault();open("print");}else if(k==="t"||k==="T"){ev.preventDefault();toggleTheme();}else if(k==="?"){ev.preventDefault();open("shortcuts");}});
+document.addEventListener("keydown",function(ev){
+ if(ev.ctrlKey||ev.metaKey||ev.altKey)return;
+ var tag=(ev.target.tagName||"").toLowerCase();
+ if(tag==="input"||tag==="textarea"||tag==="select"||ev.target.isContentEditable)return;
+ var k=ev.key;
+ if(k==="/"){ev.preventDefault();shortcutOpen("#revision-plus-launch","[data-plus-tab=search]","#plus-search");return;}
+ if(k==="f"||k==="F"){ev.preventDefault();shortcutOpen("#smart-launch","[data-sr-tab=cards]","#sr-reveal");return;}
+ if(k==="q"||k==="Q"){ev.preventDefault();shortcutOpen("#study-lab-launch","[data-lab-tab=adaptive]","[data-adapt-answer]");return;}
+ if(k==="m"||k==="M"){ev.preventDefault();shortcutOpen("#smart-launch","[data-sr-tab=mistakes]","#sr-mistake-text");return;}
+ if(k==="d"||k==="D"){ev.preventDefault();open("speed");return;}
+ if(k==="c"||k==="C"){ev.preventDefault();open("compare");return;}
+ if(k==="p"||k==="P"){ev.preventDefault();open("print");return;}
+ if(k==="t"||k==="T"){ev.preventDefault();toggleTheme();return;}
+ if(k==="?"){ev.preventDefault();open("shortcuts");}
+});
 })();
 </script>
 </body>
