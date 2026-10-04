@@ -90,6 +90,13 @@ html[data-theme="light"] .ann-analysis{background:#fff1bf;color:#5a4800}
 html[data-theme="light"] .ann-evaluation{background:#f2def5;color:#4e2455}
 html[data-theme="light"] .ann-judgement{background:#ffe1dc;color:#622c26}
 
+
+/* Smart Next Task */
+.smart-task-launch{background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important;font-weight:800}
+.smart-task-dialog{width:min(650px,95vw);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:16px;padding:1.15rem}
+.smart-task-dialog::backdrop{background:#000c}.st-head,.st-spread{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}.st-card{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:1rem;margin-top:.9rem}.st-task-name{font-size:1.45rem;font-weight:800;margin:.35rem 0}.st-reasons{margin:.75rem 0;padding-left:1.2rem}.st-reasons li{margin:.35rem 0}.st-actions{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:1rem}.st-primary{background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important}.st-pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.18rem .6rem;color:var(--muted);font-size:.8rem}
+@media(max-width:700px){.smart-task-dialog{width:100vw;max-width:none;margin:0;border-radius:0}.st-actions{display:grid;grid-template-columns:1fr}.st-actions button{min-height:48px}}
+
 </style>
 <link rel="manifest" href="./manifest.webmanifest">\n</head>
 <body>
@@ -106,6 +113,7 @@ html[data-theme="light"] .ann-judgement{background:#ffe1dc;color:#622c26}
  <button type="button" data-utility="print">Revision sheet <span aria-hidden="true">P</span></button>
  <button type="button" data-utility="theme" id="theme-toggle">Light mode <span aria-hidden="true">T</span></button>
  <button type="button" data-utility="shortcuts">Shortcuts <span aria-hidden="true">?</span></button>
+ <button type="button" id="smart-task-launch" class="smart-task-launch">Smart Next Task <span aria-hidden="true">N</span></button>
  <button type="button" id="performance-launch">Performance</button>
 <span class="utility-hint">Keyboard shortcuts available</span>
 </div>
@@ -1063,7 +1071,7 @@ function sheetData(id){
  var t=TOPICS.find(function(x){return x.id===id;}),bank=typeof BANK!=="undefined"?BANK.filter(function(b){return b[0].split(" ").indexOf(id)>=0;}):[];return{title:t.title,notes:t.notes.map(function(n){return{h:n[0],p:n[1],ev:""};}),extraTitle:"Scholars & sources",extra:bank.slice(0,8).map(function(b){return"<strong>"+e(b[1])+"</strong>: "+e(b[3])+" <span class='sheet-muted'>("+e(b[4])+")</span>";})};}
 function printView(){var ts=topics(),id=printTopic&&ts.some(function(t){return t.id===printTopic;})?printTopic:ts[0].id;printTopic=id;var d=sheetData(id);return'<section class="tb-box"><h3>Printable revision sheet</h3><p class="muted">Generate a compact topic sheet, then use your browser print menu to print it or save it as a PDF.</p><label>Topic'+select("print-topic",id)+'</label><div class="sheet-preview">'+sheetHtml(id,false)+'</div><button type="button" id="print-now" class="tb-primary">Print / Save as PDF</button></section>';}
 function sheetHtml(id,full){var d=sheetData(id),note=labNotes(id);return'<h1>'+e(d.title)+'</h1><p class="sheet-muted">'+(KIND==="geo"?"AQA A-Level Geography 7037":"AQA A-Level Religious Studies 7062")+' · Revision sheet</p><div class="sheet-section"><h2>Core knowledge</h2>'+d.notes.map(function(n){return'<h3>'+e(n.h)+'</h3><p>'+e(n.p)+'</p>'+(n.ev?'<p><strong>Evaluation:</strong> '+e(n.ev)+'</p>':'');}).join("")+'</div>'+(d.extra.length?'<div class="sheet-section"><h2>'+e(d.extraTitle)+'</h2><ul>'+d.extra.map(function(x){return'<li>'+x+'</li>';}).join("")+'</ul></div>':'')+(note?'<div class="sheet-section"><h2>My notes</h2><p style="white-space:pre-line">'+e(note)+'</p></div>':'')+'<div class="sheet-section"><h2>Quick self-test</h2><ol><li>Explain the most important process or argument in this topic without notes.</li><li>Give one precise '+(KIND==="geo"?"case-study fact or statistic":"scholar or source")+'.</li><li>State one limitation/counterargument and a justified judgement.</li></ol></div>';}
-function shortcutsView(){var rows=[["/","Global search"],["F","Spaced-repetition flashcards"],["Q","Adaptive quiz"],["M","Mistakes bank"],["D","Definition speed-run"],["C","Model answer comparison"],["P","Printable revision sheet"],["T","Toggle light/dark theme"],["?","Show shortcuts"]];return'<section class="tb-box"><h3>Keyboard shortcuts</h3><p class="muted">Shortcuts work when you are not typing in an input, textarea or editable field.</p><div class="shortcut-grid">'+rows.map(function(r){return'<div><span>'+e(r[1])+'</span><kbd>'+e(r[0])+'</kbd></div>';}).join("")+'</div></section>';}
+function shortcutsView(){var rows=[["/","Global search"],["F","Spaced-repetition flashcards"],["Q","Adaptive quiz"],["M","Mistakes bank"],["D","Definition speed-run"],["C","Model answer comparison"],["P","Printable revision sheet"],["T","Toggle light/dark theme"],["N","Smart Next Task"],["?","Show shortcuts"]];return'<section class="tb-box"><h3>Keyboard shortcuts</h3><p class="muted">Shortcuts work when you are not typing in an input, textarea or editable field.</p><div class="shortcut-grid">'+rows.map(function(r){return'<div><span>'+e(r[1])+'</span><kbd>'+e(r[0])+'</kbd></div>';}).join("")+'</div></section>';}
 function render(){var c=document.getElementById("tb-content");c.innerHTML=mode==="speed"?speedView():mode==="compare"?compareView():mode==="print"?printView():shortcutsView();}
 function open(m){mode=m;render();var d=document.getElementById("toolbox-dialog");if(d.showModal)d.showModal();else d.setAttribute("open","");}
 function close(){var d=document.getElementById("toolbox-dialog");if(d.close)d.close();else d.removeAttribute("open");}
@@ -1267,5 +1275,95 @@ document.addEventListener("click",function(ev){var b=ev.target.closest("button")
  }catch(e){}},60);},true);
 })();
 </script>
+
+<dialog id="smart-task-dialog" class="smart-task-dialog no-print" aria-labelledby="st-title">
+ <div class="st-head"><div><p class="eyebrow">Adaptive recommendation</p><h2 id="st-title">Smart Next Task</h2></div><button type="button" id="st-close">Close</button></div>
+ <div id="st-content"></div>
+</dialog>
+<script>
+(function(){
+"use strict";
+var KIND="rs",SMART_KEY="aqa-rs-smart-v1",PLUS_KEY="aqa-rs-plus-v1",LAB_KEY="aqa-rs-study-lab-v1",PERF_KEY="aqa-rs-performance-v1",currentTask=null;
+function stRead(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{};}catch(e){return{};}}
+function stEsc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});}
+function stTopics(){if(KIND==="geo")return Object.keys(U).map(function(id){return{id:id,title:U[id].title};});return TOPICS.map(function(t){return{id:t.id,title:t.title};});}
+function stTitle(id){var x=stTopics().find(function(t){return t.id===id;});return x?x.title:"Mixed topics";}
+function stTopicFromCardId(id){
+ if(!id)return"";
+ var prefix=String(id).split(":")[0];
+ if(stTopics().some(function(t){return t.id===prefix;}))return prefix;
+ try{var custom=JSON.parse(localStorage.getItem(KIND==="geo"?"aqa-geo-custom-cards-v1":"aqa-rs-custom-cards-v1")||"[]");var c=custom.find(function(x){return x.id===id;});return c?c.topic||"":"";}catch(e){return"";}
+}
+function stStats(){
+ var s=stRead(SMART_KEY),p=stRead(PLUS_KEY),l=stRead(LAB_KEY),pf=stRead(PERF_KEY),now=Date.now();
+ var confidence=s.confidence||{},mistakes=Array.isArray(s.mistakes)?s.mistakes:[],sr=s.sr||{},questions=Array.isArray(pf.questions)?pf.questions:[],paras=Array.isArray(pf.paragraphs)?pf.paragraphs:[],mocks=Array.isArray(p.mockHistory)?p.mockHistory:[];
+ var retryDue=questions.filter(function(q){return q.retryDue&&q.retryDue<=now;}).sort(function(a,b){return(a.score??101)-(b.score??101);});
+ var overdue=Object.keys(sr).filter(function(id){var r=sr[id];return r&&r.last&&r.due<=now;});
+ var topicData=stTopics().map(function(t){
+   var ms=mistakes.filter(function(m){return m.topic===t.id;}).reduce(function(n,m){return n+(m.count||1);},0);
+   var c=Number(confidence[t.id]||0),aq=(l.adaptive||{})[t.id]||{right:0,wrong:0},den=(aq.right||0)+(aq.wrong||0),acc=den?(aq.right/den*100):null;
+   var od=overdue.filter(function(id){return stTopicFromCardId(id)===t.id;}).length;
+   var weakness=(c?100-c*18:85)+Math.min(28,ms*5)+Math.min(18,od*4)+(acc!==null?Math.max(0,65-acc)*.45:8);
+   return{id:t.id,title:t.title,confidence:c,mistakes:ms,overdue:od,accuracy:acc,weakness:weakness};
+ }).sort(function(a,b){return b.weakness-a.weakness;});
+ var mockScores=mocks.slice(0,5).map(function(m){return m.total?m.score/m.total*100:null;}).filter(function(x){return x!==null;}),mockAvg=mockScores.length?mockScores.reduce(function(a,b){return a+b;},0)/mockScores.length:null;
+ var recentPara=paras[0]||null,daysSincePara=recentPara?((now-recentPara.at)/86400000):Infinity;
+ return{s:s,retryDue:retryDue,overdue:overdue,topics:topicData,mockAvg:mockAvg,daysSincePara:daysSincePara,paragraphs:paras};
+}
+function chooseTask(){
+ var d=stStats(),weak=d.topics[0]||{id:"",title:"Mixed topics",mistakes:0,confidence:0,overdue:0,accuracy:null};
+ if(d.retryDue.length){
+   var q=d.retryDue[0];return{type:"retry",topic:q.topic||weak.id,title:"Retry a weak exam question",detail:q.q,reasons:[d.retryDue.length+" question"+(d.retryDue.length===1?" is":"s are")+" due for retry",Number.isFinite(q.score)?"Your previous score was "+q.score+"%":"This question was scheduled for another attempt","Retrieval after a delay is more useful than immediately rereading the answer"],minutes:KIND==="geo"?12:15};
+ }
+ if(d.overdue.length>=3){
+   var by={};d.overdue.forEach(function(id){var t=stTopicFromCardId(id)||weak.id;by[t]=(by[t]||0)+1;});var topic=Object.keys(by).sort(function(a,b){return by[b]-by[a];})[0]||weak.id;
+   return{type:"cards",topic:topic,title:"Clear your overdue flashcards",detail:"Review the due cards for "+stTitle(topic)+".",reasons:[d.overdue.length+" spaced-repetition cards are overdue",by[topic]+" of those cards are from "+stTitle(topic),"Clearing due cards now protects long-term retention"],minutes:10};
+ }
+ if(weak.mistakes>=2||(!weak.confidence)||weak.confidence<=2){
+   return{type:"adaptive",topic:weak.id,title:"Adaptive quiz on your weakest area",detail:"Test yourself on "+weak.title+" without notes.",reasons:[weak.mistakes+" recorded mistake"+(weak.mistakes===1?"":"s")+" in this topic",weak.confidence?("Confidence is only "+weak.confidence+"/5"):"You have not rated this topic as secure yet",weak.accuracy!==null?("Adaptive-quiz accuracy is "+Math.round(weak.accuracy)+"%"):"More retrieval data is needed for this topic"],minutes:10};
+ }
+ if(weak.accuracy!==null&&weak.accuracy<70){
+   return{type:"adaptive",topic:weak.id,title:"Raise your quiz accuracy",detail:"Do an adaptive retrieval round focused on weaker material.",reasons:["Your weakest topic is "+weak.title,"Its adaptive-quiz accuracy is "+Math.round(weak.accuracy)+"%","Another retrieval round will give the site better evidence of whether the weakness is improving"],minutes:10};
+ }
+ if(d.mockAvg!==null&&d.mockAvg<70){
+   return{type:"paragraph",topic:weak.id,title:"Timed exam-writing practice",detail:"Write one timed analytical paragraph for "+weak.title+".",reasons:["Your recent mock average is "+Math.round(d.mockAvg)+"%","Knowledge work is relatively up to date, so exam technique is the next useful target","A short timed paragraph lets you practise analysis/evaluation without writing a full essay"],minutes:8};
+ }
+ if(d.daysSincePara>5){
+   return{type:"paragraph",topic:weak.id,title:"Timed paragraph on "+weak.title,detail:"Practise one exam paragraph under time pressure.",reasons:[d.daysSincePara===Infinity?"No timed paragraph has been logged yet":"It has been "+Math.floor(d.daysSincePara)+" days since your last timed paragraph","Your flashcard/retry workload is currently manageable","Regular writing practice prevents revision becoming recall-only"],minutes:8};
+ }
+ return{type:"cards",topic:weak.id,title:"Maintain your weakest topic",detail:"Run a short spaced-repetition review for "+weak.title+".",reasons:["No urgent retry queue is due","Your current weakest topic is "+weak.title,weak.confidence?("Confidence is "+weak.confidence+"/5"):"The site needs more confidence data for this topic"],minutes:10};
+}
+function render(){
+ currentTask=chooseTask();var t=currentTask;
+ document.getElementById("st-content").innerHTML='<div class="st-card"><div class="st-spread"><span class="st-pill">About '+t.minutes+' min</span><span class="st-pill">'+stEsc(stTitle(t.topic))+'</span></div><div class="st-task-name">'+stEsc(t.title)+'</div><p>'+stEsc(t.detail)+'</p><h3>Why this is next</h3><ul class="st-reasons">'+t.reasons.map(function(x){return'<li>'+stEsc(x)+'</li>';}).join("")+'</ul><div class="st-actions"><button type="button" id="st-start" class="st-primary">Start this task</button><button type="button" id="st-recalculate">Recalculate</button></div></div>';
+}
+function open(){render();var d=document.getElementById("smart-task-dialog");if(d.showModal)d.showModal();else d.setAttribute("open","");}
+function close(){var d=document.getElementById("smart-task-dialog");if(d.close)d.close();else d.removeAttribute("open");}
+function clickAfter(selector,delay){setTimeout(function(){document.querySelector(selector)?.click();},delay||50);}
+function start(){
+ var t=currentTask;if(!t)return;
+ close();
+ if(t.type==="retry"){
+   document.getElementById("performance-launch")?.click();clickAfter('[data-ph-tab="retry"]',60);return;
+ }
+ if(t.type==="cards"){
+   document.getElementById("smart-launch")?.click();
+   setTimeout(function(){document.querySelector('[data-sr-tab="cards"]')?.click();setTimeout(function(){var s=document.getElementById("sr-card-topic");if(s&&t.topic){s.value=t.topic;s.dispatchEvent(new Event("change",{bubbles:true}));}},50);},60);return;
+ }
+ if(t.type==="adaptive"){
+   document.getElementById("study-lab-launch")?.click();clickAfter('[data-lab-tab="adaptive"]',60);return;
+ }
+ if(t.type==="paragraph"){
+   document.getElementById("performance-launch")?.click();
+   setTimeout(function(){document.querySelector('[data-ph-tab="paragraph"]')?.click();setTimeout(function(){var s=document.getElementById("para-topic");if(s&&t.topic){s.value=t.topic;s.dispatchEvent(new Event("change",{bubbles:true}));}},50);},60);return;
+ }
+}
+document.getElementById("smart-task-launch")?.addEventListener("click",open);
+document.getElementById("st-close")?.addEventListener("click",close);
+document.getElementById("smart-task-dialog")?.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;if(b.id==="st-start")start();if(b.id==="st-recalculate")render();});
+document.addEventListener("keydown",function(e){if(e.ctrlKey||e.metaKey||e.altKey)return;var tag=(e.target.tagName||"").toLowerCase();if(tag==="input"||tag==="textarea"||tag==="select"||e.target.isContentEditable)return;if(e.key==="n"||e.key==="N"){e.preventDefault();open();}});
+})();
+</script>
+
 </body>
 </html>
