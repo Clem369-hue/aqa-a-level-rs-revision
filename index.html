@@ -717,7 +717,7 @@ function srRender(){
 function srOpen(){srLoad();var d=document.getElementById("smart-revision-dialog");srRender();if(d.showModal)d.showModal();else d.setAttribute("open","");}
 function srClose(){var d=document.getElementById("smart-revision-dialog");if(d.close)d.close();else d.removeAttribute("open");}
 // Shared storage contract: older backups may omit keys; explicit null clears a saved slot.
-var progressKeys=[SR_KIND==="geo"?"fieldnotes-aqa7037-v1":"reason-faith-7062-v1"].concat(["smart","plus","study-lab","custom-cards","performance","theme"].map(function(x){return"aqa-"+SR_KIND+"-"+x+"-v1";}));
+var progressKeys=[SR_KIND==="geo"?"fieldnotes-aqa7037-v1":"reason-faith-7062-v1"].concat(["smart","plus","study-lab","custom-cards","performance","exam-boost","theme"].map(function(x){return"aqa-"+SR_KIND+"-"+x+"-v1";}));
 window.__aqaProgress={keys:progressKeys,snapshot:function(){var out={};progressKeys.forEach(function(k){out[k]=window.__aqaRead(k);});return out;},restore:function(values){
  if(!values||typeof values!=="object"||Array.isArray(values))throw Error("Invalid progress data.");
  var keys=progressKeys.filter(function(k){return Object.prototype.hasOwnProperty.call(values,k);}),previous={};
