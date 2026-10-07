@@ -6,7 +6,7 @@ const KEY="aqa-rs-exam-boost-v1";
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]);
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){return{};}};
 let st=Object.assign({gapRuns:[],quoteRight:0,quoteWrong:0,dialogueAttempts:[],dialogueDrafts:{}},read());
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
+const save=()=>{try{if(window.__aqaStore)window.__aqaStore(KEY,JSON.stringify(st));else localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 function addMistake(topic,q,a,note,cat){try{window.__aqaSmart.addMistake(topic||"arguments",q,a,note||"Exam Boost gap",cat||"Knowledge");}catch(e){}}
 function logQ(q,topic,source,marks,attempted,score){try{window.__aqaLogQuestion?.(q,topic,source,marks,attempted,score);}catch(e){}}
