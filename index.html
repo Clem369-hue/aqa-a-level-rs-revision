@@ -417,7 +417,7 @@ const KEY="reason-faith-7062-v1";
 let state={version:1,learned:[],drafts:{}},storageOK=true;
 function validateState(x){
  if(!x||x.version!==1||!Array.isArray(x.learned)||!x.drafts||typeof x.drafts!=="object"||Array.isArray(x.drafts))throw Error("Unrecognised backup format.");
- const result={version:1,learned:[...new Set(x.learned.filter(v=>VALID_CARDS.has(v)))],drafts:{}};
+ const result={version:1,learned:[...new Set(x.learned.filter(v=>VALID_CARDS.has(v)||String(v).startsWith("adv:")))],drafts:{}};
  for(const [key,d] of Object.entries(x.drafts)){
   if(!VALID_DRAFTS.has(key)||!d||typeof d!=="object")continue;
   result.drafts[key]={question:typeof d.question==="string"?d.question.slice(0,2000):"",fields:Array.from({length:5},(_,i)=>typeof d.fields?.[i]==="string"?d.fields[i].slice(0,20000):""),checks:Array.from({length:6},(_,i)=>d.checks?.[i]===true)};
@@ -1372,5 +1372,8 @@ document.addEventListener("keydown",function(e){if(e.ctrlKey||e.metaKey||e.altKe
 })();
 </script>
 
+<script src="rs-advanced-content.js"></script>
+<script src="rs-scholar-source-bank.js"></script>
+<script src="rs-essay-banks.js"></script>
 </body>
 </html>
