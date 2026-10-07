@@ -13,13 +13,13 @@ function harness(subject, initial = {}) {
   const store = new Map(Object.entries(initial));
   const elements = new Map(), selectors = new Map(), timers = [];
   function el(id) {
-    if (!elements.has(id)) elements.set(id, {id, value:'', textContent:'', innerHTML:'', dataset:{}, style:{}, events:{}, classList:{toggle(){},add(){},remove(){}}, matches(sel){return sel==='[data-essay-field]'?!!this.dataset.essayField:sel==='[data-annotation-cat]'?this.dataset.annotationCat!==undefined:false}, addEventListener(n,f){(this.events[n] ||= []).push(f)}, setAttribute(){}, removeAttribute(){}, showModal(){this.open=true}, close(){this.open=false}, focus(){}, select(){}, remove(){}, insertAdjacentElement(_,x){elements.set(x.id,x)}, click(){this.clicked=true;(this.events.click||[]).forEach(f=>f({target:this}))}, querySelector(){return null}, querySelectorAll(){return []}});
+    if (!elements.has(id)) elements.set(id, {id, value:'', textContent:'', innerHTML:'', dataset:{}, style:{}, events:{}, classList:{toggle(){},add(){},remove(){}}, matches(sel){return sel==='[data-essay-field]'?!!this.dataset.essayField:sel==='[data-annotation-cat]'?this.dataset.annotationCat!==undefined:false}, addEventListener(n,f){(this.events[n] ||= []).push(f)}, setAttribute(){}, removeAttribute(){}, showModal(){this.open=true}, close(){this.open=false}, appendChild(x){elements.set(x.id,x)},focus(){}, select(){}, remove(){}, insertAdjacentElement(_,x){elements.set(x.id,x)}, click(){this.clicked=true;(this.events.click||[]).forEach(f=>f({target:this}))}, querySelector(){return null}, querySelectorAll(){return []}});
     return elements.get(id);
   }
   const context = {console, Date, Math, Set, Map, URL, URLSearchParams, TextEncoder, TextDecoder,
     localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},
     location:{href:'https://review.test/'+subject+'/',search:'',reload(){}}, history:{replaceState(){}}, navigator:{},
-    document:{body:{classList:{toggle(){},add(){},remove(){}},appendChild(){}},documentElement:{dataset:{}},getElementById:id=>id==='smart-idk'?null:el(id),querySelector:s=>selectors.get(s)||null,querySelectorAll:s=>selectors.get(s)||[],createElement:()=>el('new-'+Math.random()),addEventListener(){}},
+    document:{body:{classList:{toggle(){},add(){},remove(){}},appendChild(x){elements.set(x.id,x)}},documentElement:{dataset:{}},getElementById:id=>id==='save-warning'?(elements.get(id)||null):id==='smart-idk'?null:el(id),querySelector:s=>selectors.get(s)||null,querySelectorAll:s=>selectors.get(s)||[],createElement:()=>el('new-'+Math.random()),addEventListener(){}},
     MutationObserver:class{observe(){}},setTimeout:f=>{timers.push(f);return timers.length},clearTimeout(){},setInterval:()=>1,clearInterval(){},alert(){},
     Blob:class{constructor(parts){context.lastBlob=parts.join('')}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary'),
     Event:class {constructor(type){this.type=type}},__modules:{},
@@ -33,9 +33,9 @@ function harness(subject, initial = {}) {
   const exports={
    1:'srState,srCards,srLoad,srRate,srAddMistake,srOpen,srExamView,srGenerateExam,srRec',
    2:'index,cards,heatData,exportBackup,importBackup,addSmartIdk,newMock,mockView,caseView,mark,getMock:()=>mock',
-   3:'progressPayload,quizBank,answerAdaptive,nextAdaptive,essayView,notesView,render,availableTopics,applySet,captureEssay,getLab:()=>lab,getAdaptive:()=>adaptive,getEssayQuestion:()=>essayQuestion'+(subject==='geography'?',dataPool,dataView':',quotesPool,quotesView'),
+   3:'improveView,progressPayload,quizBank,answerAdaptive,nextAdaptive,essayView,notesView,render,availableTopics,applySet,captureEssay,getLab:()=>lab,getAdaptive:()=>adaptive,getEssayQuestion:()=>essayQuestion'+(subject==='geography'?',dataPool,dataView':',quotesPool,quotesView'),
    4:'sheetData',
-   5:'logQuestion,seedHistory,paragraphView,startParagraph,finishParagraph,annotationView,buildAnnotation,retryCandidates,retryView,getPerf:()=>perf,getPara:()=>para,render'+(subject==='geography'?',neaNums,neaSpearman,neaMannWhitney,neaParseMatrix,neaChiSquare,neaView,neaRecommendation,neaResultHtml,neaInputs':''),
+   5:'analytics,logQuestion,seedHistory,paragraphView,startParagraph,finishParagraph,annotationView,buildAnnotation,retryCandidates,retryView,getPerf:()=>perf,getPara:()=>para,render'+(subject==='geography'?',neaNums,neaSpearman,neaMannWhitney,neaParseMatrix,neaChiSquare,neaView,neaRecommendation,neaResultHtml,neaInputs':''),
    6:'stTopicFromCardId,stStats,chooseTask,start,render'
   };
   for(let i=1;i<scripts.length;i++){
@@ -142,9 +142,48 @@ if(subject==='geography'){
   const h=fresh();const r=h.modules[5].neaSpearman([1,2,3,4,5],[1,2,3,5,4]);r.calculationVersion=2;const seed={[perf]:JSON.stringify({neaStats:{lastResult:r,inputs:{'nea-x':'1,2,3,4,5'}}})};const restored=fresh(seed);assert.ok(restored.modules[5].neaView().includes('exact p = 0.0833'));assert.ok(restored.modules[5].neaInputs().includes('>1,2,3,4,5</textarea>'));assert.ok(h.modules[5].neaResultHtml({writeup:'Old conclusion'}).includes('Recalculate'));
  });
 }
+test('Mock drafts survive reload and are present in backups',()=>{
+ const h=fresh();h.modules[2].newMock();const item=h.modules[2].getMock().items[0];
+ const input=h.el('test-mock');input.dataset.mockAnswer='0';input.value='A saved mock answer';input.matches=s=>s==='[data-mock-answer]';h.event('revision-plus-dialog','input',input);
+ const r=fresh(Object.fromEntries(h.store));assert.equal(r.modules[2].getMock().items[0].answer,input.value);assert.equal(r.modules[2].getMock().items[0].q,item.q);
+ assert(h.context.__aqaProgress.snapshot()[plus].includes(input.value));
+});
+test('Improvement drafts keep question and both answers across topics, tabs and reload',()=>{
+ const h=fresh();const ids=h.modules[3].availableTopics().map(t=>t.id);h.modules[3].improveView();
+ h.el('lab-improve-topic').value=ids[0];h.el('lab-improve-question').value='Saved question';h.el('lab-improve-a').value='First <answer>';h.el('lab-improve-b').value='Second answer';h.event('study-lab-dialog','input',h.el('lab-improve-a'));
+ h.el('lab-improve-topic').value=ids[1];h.event('study-lab-dialog','change',h.el('lab-improve-topic'));assert(!h.modules[3].improveView().includes('Saved question'));
+ h.el('lab-improve-topic').value=ids[0];h.event('study-lab-dialog','change',h.el('lab-improve-topic'));
+ const html=fresh(Object.fromEntries(h.store)).modules[3].improveView();assert(html.includes('Saved question'));assert(html.includes('First &lt;answer&gt;'));assert(html.includes('Second answer'));
+});
+test('Retry drafts persist and blank ratings cannot replace scores or advance the schedule',()=>{
+ const h=fresh(),m=h.modules[5],id=h.modules[3].availableTopics()[0].id;m.logQuestion('Retry test',id,'Mock exam',20,true,25);const q=m.getPerf().questions[0];h.context.__aqaOpenRetry(q.id);const due=q.retryDue;
+ h.el('retry-answer').value='';h.click('performance-dialog',{dataset:{retryRate:'secure'}});assert.equal(q.retryDue,due);assert.equal(q.score,25);assert.equal(q.retryCount,0);
+ h.el('retry-answer').value='My revised answer';h.event('performance-dialog','input',h.el('retry-answer'));
+ const r=fresh(Object.fromEntries(h.store));r.context.__aqaOpenRetry(q.id);assert(r.modules[5].retryView().includes('My revised answer'));
+ h.click('performance-dialog',{dataset:{retryRate:'secure'}});assert.equal(q.score,25);assert.equal(q.retryRating,'secure');assert.equal(q.lastRetryAnswer,'My revised answer');assert.equal(q.retryDraft,'');assert.equal(q.retryCount,1);assert(q.retryDue>due);
+});
+test('Topic analytics distinguish no data, zero accuracy and measured accuracy',()=>{
+ const h=fresh();assert(h.modules[5].analytics().includes('No data yet'));assert(!h.modules[5].analytics().includes('<strong>45%</strong>'));
+ const ids=h.modules[3].availableTopics().map(t=>t.id);const data={adaptive:{[ids[0]]:{right:0,wrong:2},[ids[1]]:{right:3,wrong:1}}};
+ const html=fresh({[lab]:JSON.stringify(data)}).modules[5].analytics();assert(html.includes('<strong>0%</strong>'));assert(html.includes('<strong>75%</strong>'));
+});
+test('Paragraph feedback survives navigation and reload and clears for a new prompt',()=>{
+ const h=fresh(),m=h.modules[5];m.paragraphView();m.getPara().answer='Because evidence supports this claim however overall it depends on context.';m.finishParagraph(false);const result=m.getPara().result;const html=m.paragraphView();assert(html.includes('ph-result'));assert(html.includes(result.words+' words'));
+ const r=fresh(Object.fromEntries(h.store));assert(r.modules[5].paragraphView().includes(result.words+' words'));
+ h.click('performance-dialog',{id:'para-new',dataset:{}});assert.equal(m.getPara().result,null);assert(!m.paragraphView().includes('class="ph-result"'));
+});
+test('Failed saves warn, remain recoverable in backups and retry successfully',()=>{
+ const h=fresh(),id=h.modules[3].availableTopics()[0].id;const write=h.context.localStorage.setItem;let alerts=[];h.context.alert=s=>alerts.push(s);h.context.localStorage.setItem=()=>{throw Error('QuotaExceededError')};
+ h.el('lab-note-topic').value=id;h.el('lab-note-text').value='Unsaved but recoverable';h.click('study-lab-dialog',{id:'lab-save-note',dataset:{}});
+ assert.equal(alerts.length,1);assert.equal(h.el('save-warning').hidden,false);assert(!String(h.store.get(lab)).includes('Unsaved but recoverable'));assert(h.context.__aqaProgress.snapshot()[lab].includes('Unsaved but recoverable'));
+ h.el('lab-note-text').value='Latest draft';h.click('study-lab-dialog',{id:'lab-save-note',dataset:{}});assert.equal(alerts.length,1);assert(h.context.__aqaRead(lab).includes('Latest draft'));
+ h.context.localStorage.setItem=write;for(const [k,v] of h.context.__aqaPendingWrites)assert.equal(h.context.__aqaStore(k,v),true);
+ assert.equal(h.context.__aqaPendingWrites.size,0);assert.equal(h.el('save-warning').hidden,true);assert.equal(fresh(Object.fromEntries(h.store)).modules[3].getLab().notes[id],'Latest draft');
+});
+
 (async()=>{
  const handlers={},deleted=[];let done;
  vm.runInNewContext(fs.readFileSync(path.join(root,'sw.js'),'utf8'),{self:{addEventListener:(n,f)=>handlers[n]=f,clients:{claim(){}},skipWaiting(){}},caches:{keys:async()=>['geo-revision-pwa-v1','geo-revision-pwa-v2','rs-revision-pwa-v1','rs-revision-pwa-v2'],delete:async k=>deleted.push(k)}});
- handlers.activate({waitUntil:p=>done=p});await done;assert.deepEqual(deleted,[kind+'-revision-pwa-v1']);checks++;console.log('PASS Service worker retains sibling caches');
+ handlers.activate({waitUntil:p=>done=p});await done;assert.deepEqual(deleted,[kind+'-revision-pwa-v1',kind+'-revision-pwa-v2']);checks++;console.log('PASS Service worker retains sibling caches');
  console.log(`${subject}: ${checks} regression checks passed`);
 })().catch(e=>{console.error(e);process.exitCode=1});
