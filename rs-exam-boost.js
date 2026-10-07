@@ -3,7 +3,7 @@
 "use strict";
 if(typeof TOPICS==="undefined"||typeof BANK==="undefined"||!window.__aqaSmart)return;
 const KEY="aqa-rs-exam-boost-v1";
-const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){return{};}};
 let st=Object.assign({gapRuns:[],quoteRight:0,quoteWrong:0,dialogueAttempts:[],dialogueDrafts:{}},read());
 const save=()=>{try{if(window.__aqaStore)window.__aqaStore(KEY,JSON.stringify(st));else localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
