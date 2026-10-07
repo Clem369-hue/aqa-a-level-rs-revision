@@ -32,6 +32,18 @@ window.renderDialoguePlus=function(){
  '<div class="callout"><strong>Dialogue rule:</strong> state the Christian belief, connect the philosophical/ethical idea directly to it, then explain what changes if the challenge succeeds.</div>'+
  (rows.length?'<div class="grid">'+rows.map(x=>'<article class="card"><h3>'+esc(x[0])+'</h3><p>'+esc(x[2])+'</p><p class="evaluation"><strong>Debate move:</strong> '+esc(x[3])+'</p><p><strong>Judgement move:</strong> '+esc(x[4])+'</p></article>').join("")+'</div>':'<p class="empty">No advanced dialogue links in this scope.</p>');
 };
+try{
+ if(typeof index==="function"){
+  const baseIndex=index;
+  index=function(){
+   const out=baseIndex();
+   RS_AO2.forEach((x,i)=>out.push({id:"ao2plus:"+i,type:"AO2 debate",topic:x[0],title:x[1],text:x.slice(2).join(" ")}));
+   RS_DENOMS.forEach((x,i)=>out.push({id:"denom:"+i,type:"Denomination comparison",topic:(x[1].split(" ")[0]||"general"),title:x[0],text:x.slice(2).join(" ")}));
+   RS_DIALOGUE_PLUS.forEach((x,i)=>out.push({id:"dialogueplus:"+i,type:"A* dialogue",topic:(x[1].split(" ")[0]||"general"),title:x[0],text:x.slice(2).join(" ")}));
+   return out;
+  };
+ }
+}catch(e){}
 const baseRenderActive=renderActive;
 renderActive=function(){
  if(tool==="ao2plus"){renderAO2Plus();return;}
