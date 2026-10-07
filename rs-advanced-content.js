@@ -8,5 +8,5 @@ TOPICS.forEach(t=>{
  const start=t.notes.length;
  notes.forEach((n,j)=>{t.notes.push(n);const id="adv:"+t.id+":"+j;CARDS.push({id,t:t.id,q:n[0],a:n[1],title:t.title});if(typeof VALID_CARDS!=="undefined")VALID_CARDS.add(id);});
 });
-try{if(typeof resetDeck==="function"){resetDeck();if(typeof renderActive==="function")renderActive();}}catch(e){}
+try{if(typeof resetDeck==="function")resetDeck();if(typeof updateStatus==="function")updateStatus();if(typeof renderActive==="function")renderActive();}catch(e){}
 })();
